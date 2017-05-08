@@ -7,6 +7,10 @@ LABEL maintainer="The University of Auckland" \
 ADD http://download.opensuse.org/repositories/security://shibboleth/CentOS_7/security:shibboleth.repo /etc/yum.repos.d/shibboleth.repo
 ADD http://repo1.maven.org/maven2/io/swagger/swagger-codegen-cli/2.2.2/swagger-codegen-cli-2.2.2.jar swagger-codegen-cli.jar
 ADD https://api.sandbox.orcid.org/resources/swagger.json /orcid/swagger.json
+ADD https://directory.test.tuakiri.ac.nz/metadata/tuakiri-test-metadata-cert.pem /etc/shibboleth/
+ADD https://directory.tuakiri.ac.nz/metadata/tuakiri-metadata-cert.pem /etc/shibboleth/
+ADD https://directory.test.tuakiri.ac.nz/metadata/tuakiri-test-metadata-signed.xml /etc/shibboleth/
+ADD https://directory.tuakiri.ac.nz/metadata/tuakiri-metadata-signed.xml /etc/shibboleth/
 
 COPY conf/app.wsgi /var/www/html/
 # prefix "ZZ" added, that it gest inluded the very end (after Shibboleth gets loaded)

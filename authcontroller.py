@@ -120,21 +120,18 @@ def shib_login():
             "auth_secret")
         data = requests.get(attr_url, verify=False).text
         data = pickle.loads(zlib.decompress(base64.b64decode(data)))
-        token = data.get("Auedupersonsharedtoken")
-        last_name = data['Sn']
-        first_name = data['Givenname']
-        email = data['Mail']
-        session["shib_O"] = shib_org_name = data['O']
-        name = data.get('Displayname')
-        eduPersonAffiliation = data.get('Unscoped-Affiliation')
     else:
-        token = request.headers.get("Auedupersonsharedtoken")
-        last_name = request.headers['Sn']
-        first_name = request.headers['Givenname']
-        email = request.headers['Mail']
-        session["shib_O"] = shib_org_name = request.headers['O']
-        name = request.headers.get('Displayname')
-        eduPersonAffiliation = request.headers.get('Unscoped-Affiliation')
+        data = request.headers
+
+    token = data.get("Auedupersonsharedtoken")
+    last_name = data['Sn']
+    first_name = data['Givenname']
+    email = data['Mail']
+    session["shib_O"] = shib_org_name = data['O']
+    name = data.get('Displayname')
+    eduPersonAffiliation = data.get('Unscoped-Affiliation')
+
+    app.logger.info(f"User {name} logged in via TUAKIRI: token: {token}")
 
     if eduPersonAffiliation:
         if any(epa in eduPersonAffiliation for epa in ['faculty', 'staff', 'employee']) \

@@ -16,9 +16,13 @@ from config import (MAIL_DEFAULT_SENDER, MAIL_PASSWORD, MAIL_SERVER, MAIL_USERNA
 app = Flask(__name__)
 
 if os.path.exists("/var/log/orcidhub"):
-    handler = RotatingFileHandler('/var/log/orcidhub/orcidhub.log', maxBytes=10000, backupCount=10)
-    handler.setLevel(logging.INFO)
-    app.logger.addHandler(handler)
+    try:
+        handler = RotatingFileHandler('/var/log/orcidhub/orcidhub.log', maxBytes=10000, backupCount=10)
+        handler.setLevel(logging.INFO)
+        app.logger.addHandler(handler)
+    except Exception as ex:
+        app.logger.error("Failed to log to the application logfile: %s", ex.message)
+
 
 app.secret_key = ")Xq/4vc'K%wRe&sQ$n'n;?+y@^rY\/u8!sk{?D7Y>.V`t_/y'wn>7~cZ$(Q.$n)d_j"
 # NB! Disable in production
