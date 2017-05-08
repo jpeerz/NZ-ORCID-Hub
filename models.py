@@ -162,7 +162,7 @@ class OrgInfo(BaseModel):
 
     def __repr__(self):
         """String representation of the model."""
-        return self.name
+        return self.name or self.disambiguation_org_id or self.email or super().__repr__()
 
     class Meta:
         db_table = "org_info"
