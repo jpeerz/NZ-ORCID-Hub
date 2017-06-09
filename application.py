@@ -8,6 +8,7 @@ from flask_admin import Admin
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_mail import Mail
 from playhouse.db_url import connect
+from flask_oauthlib.provider import OAuth2Provider
 
 from config import *  # noqa: F401, F403
 
@@ -45,6 +46,8 @@ mail.init_app(app)
 #admin = Admin(app, name="NZ ORCiD Hub", template_mode="bootstrap3", base_template="layout.html")
 admin = Admin(
     app, name="NZ ORCiD Hub", template_mode="bootstrap3", base_template="admin/master.html")
+
+oauth = OAuth2Provider(app)
 
 login_manager = flask_login.LoginManager()
 login_manager.login_view = "login"

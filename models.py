@@ -440,6 +440,106 @@ class UserOrgAffiliation(BaseModel):
         table_alias = "oua"
 
 
+class Client(BaseModel):
+    name = CharField(max_length=40, null=True, help_text="Human readable name, not required")
+    description = CharField(max_length=400, null=True, help_text="Human readable description, not required")
+    user = ForeignKeyField(User, help_text="Creator of the client, not required")
+    #
+    ## user_id = db.Column(db.ForeignKey('user.id'))
+    # required if you need to support client credential
+    ## user = db.relationship('User')
+
+    client_id = CharField(max_length=40, primary_key=True)
+    client_secret = CharField(max_length=55, unique=True, null=True)
+    is_confidential = BooleanField(null=True, help_text="Public or confidential")
+
+    _redirect_uris = TextField(null=True)
+    _default_scopes = TextField(null=True)
+
+    @property
+    def client_type(self):
+        if self.is_confidential:
+            return 'confidential'
+        return 'public'
+
+    @property
+    def redirect_uris(self):
+        if self._redirect_uris:
+            return self._redirect_uris.split()
+        return []
+
+    @property
+    def default_redirect_uri(self):
+        return self.redirect_uris[0]
+
+    @property
+    def default_scopes(self):
+        if self._default_scopes:
+            return self._default_scopes.split()
+        return []
+
+class Grant(db.Model):
+
+    user = ForeignKeyField(User)
+    # user_id = db.Column(
+    #     db.Integer, db.ForeignKey('user.id', ondelete='CASCADE')
+    # )
+    # user = db.relationship('User')
+
+    client = ForeignKeyField(Client)
+    # client_id = db.Column(
+    #     db.String(40), db.ForeignKey('client.client_id'),
+    #     nullable=False,
+    # )
+    # client = db.relationship('Client')
+
+    code = CharField(max_length=255, index=True)
+    redirect_uri = CharField(max_length=255, index=True, null=True)
+    expires = DateTimeField(null=True)
+    _scopes = TextField(null=True)
+
+    def delete(self):
+        super().delete().execute()
+        return self
+
+    @property
+    def scopes(self):
+        if self._scopes:
+            return self._scopes.split()
+        return []
+
+class Token(db.Model):
+    client = ForeignKeyField(Client)
+    # client_id = db.Column(
+    #     db.String(40), db.ForeignKey('client.client_id'),
+    #     nullable=False,
+    # )
+    # client = db.relationship('Client')
+
+    user = ForeignKeyField(User)
+    # user_id = db.Column(
+    #     db.Integer, db.ForeignKey('user.id')
+    # )
+    # user = db.relationship('User')
+
+    # currently only bearer is supported
+    token_type = CharField(max_length=40)
+
+    access_token = CharField(max_length=255, unique=True)
+    refresh_token = CharField(max_length=255, unique=True)
+    expires = DateTimeField(null=True)
+    _scopes = TextField(null=True)
+
+    def delete(self):
+        super().delete().execute()
+        return self
+
+    @property
+    def scopes(self):
+        if self._scopes:
+            return self._scopes.split()
+        return []
+
 def create_tables():
     """Create all DB tables."""
     try:
