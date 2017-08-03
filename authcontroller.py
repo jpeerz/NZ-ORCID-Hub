@@ -639,7 +639,7 @@ def confirm_organisation(token=None):
         return redirect(url_for("login"))
 
     if form.validate_on_submit():
-        if not (user is  None or organisation is None):
+        if not (user is None or organisation is None):
             # Update Organisation
             organisation.country = form.country.data
             organisation.city = form.city.data
@@ -659,8 +659,7 @@ def confirm_organisation(token=None):
 
             if response.status_code == 401:
                 flash("Something is wrong! The Client id and Client Secret are not valid!\n"
-                        "Please recheck and contact Hub support if this error continues",
-                        "danger")
+                      "Please recheck and contact Hub support if this error continues", "danger")
             else:
                 organisation.confirmed = True
                 organisation.orcid_client_id = form.orgOricdClientId.data.strip()
@@ -908,6 +907,7 @@ def orcid_login(token=None):
     try:
         extend_url = "?"
         email = None
+        user_org_data = None
 
         if token is not None:
             email_and_organisation = confirm_token(token)
@@ -915,10 +915,16 @@ def orcid_login(token=None):
             extend_url = extend_url + "email=" + email + "&" + "orgName=" + org
             organisation = Organisation.get(name=org)
             user = User.get(email=email)
+            user_org_data = UserOrg.get(user=user, org=organisation)
             session['email'] = email
             session['orgName'] = organisation.name
 
-        redirect_uri = url_for("orcid_login_callback", _external=True)
+        if user_org_data and not user_org_data.is_admin:
+            redirect_uri = url_for("orcid_callback", _external=True)
+            extend_url = extend_url + "first_time_invited_researcher"
+        else:
+            redirect_uri = url_for("orcid_login_callback", _external=True)
+
         if EXTERNAL_SP:
             sp_url = urlparse(EXTERNAL_SP)
             redirect_uri = sp_url.scheme + "://" + sp_url.netloc + "/orcid/auth/" + quote(

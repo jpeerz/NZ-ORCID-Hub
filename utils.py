@@ -18,7 +18,7 @@ from itsdangerous import URLSafeTimedSerializer
 from peewee import JOIN
 
 from application import app
-from config import ENV
+from config import ENV, EXTERNAL_SP
 from models import (Affiliation, AffiliationRecord, Organisation, Role, Task, User, UserInvitation,
                     UserOrg, OrcidToken)
 
@@ -233,8 +233,11 @@ def set_server_name():
     """Set the server name for batch processes."""
 
     if not app.config.get("SERVER_NAME"):
-        app.config[
-            "SERVER_NAME"] = "orcidhub.org.nz" if ENV == "prod" else ENV + ".orcidhub.org.nz"
+        if EXTERNAL_SP:
+            app.config["SERVER_NAME"] = "127.0.0.1"
+        else:
+            app.config[
+                "SERVER_NAME"] = "orcidhub.org.nz" if ENV == "prod" else ENV + ".orcidhub.org.nz"
 
 
 def send_user_initation(inviter,
