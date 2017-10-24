@@ -1,0 +1,29 @@
+{% macro render_field(f) %}
+{% if f.type == "BooleanField" %}
+  <div class="checkbox">
+    <label for="{{ f.id }}">
+      {{ f(id=f.id, placeholder=f.label.text, **kwargs) }}
+      {{ f.label.text }}
+    </label>
+  {% else %}
+    <div class="form-group">
+      {{ f.label }}{% if f.flags.required %}&nbsp;<strong style="color: red">*</strong>{% endif %}
+      {{ f(class="form-control", id=f.id, placeholder=f.label.text, **kwargs) | safe }}
+    {% endif %}
+    {% if f.errors %}
+      <ul class=errors>
+        {% for error in f.errors %}
+          <li style="color: red">{{ error }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    </div>
+    {% endmacro %}
+
+<form method="post">
+  <dl>
+    {{ render_field(form.username) }}
+    {{ render_field(form.password) }}
+  </dl>
+  <p><input type="submit" value="Login">
+</form>
