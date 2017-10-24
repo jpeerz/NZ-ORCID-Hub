@@ -261,7 +261,7 @@ def handle_login():
             user.eppn = eppn
     else:
 
-        if ENV != "dev" and not (unscoped_affiliation & {"faculty", "staff", "student"}):
+        if not ENV.startswith("dev") and not (unscoped_affiliation & {"faculty", "staff", "student"}):
             msg = f"Access Denied! Your account (email: {email}, eppn: {eppn}) is not affiliated with '{shib_org_name}'"
             app.logger.error(msg)
             flash(msg, "danger")
