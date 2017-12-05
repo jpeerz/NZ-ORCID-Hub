@@ -1,6 +1,6 @@
 *** Settings ***
 Documentation     Mailinator Service Resource File
-Library           SeleniumLibrary   run_on_failure=Nothing
+Library             SeleniumLibrary     run_on_failure=Nothing
 Library           String
 Resource          resource.robot
 Variables         variables.py
@@ -21,10 +21,8 @@ OrcidHub Email
 Orcid Email
     ${heading} =    //div[@id=]
 
-# Deactivate Orcid Account
-    # Select Frame    xpath=(//iframe[@id='msg_body']|//frame[@id='msg_body'])
-    # Click Link      https://sandbox.orcid.org/account/confirm-deactivate-orcid
-    # # Click Link      xpath=(a[contains(@href,'confirm-deactivate-orcid')])
-    # # Click Link      a[@href='http://click1.clickrouter.com/redirect?token=a2258079c24c4c50a56b6b1ffb75d6e2&url=https%3A//sandbox.orcid.org/account/confirm-deactivate-orcid/bnFnLzFVSDQ4RURZa3c5YXlENVVQZWVZU2J0Um5OUVdleVEvU1pYS2ZUamR2eFFrNytZUWljZlhta2g3aUJ4YVNLNFVYRHQ5cHFYV09qQ3hSMndMeFE9PQ%3Flang%3Den')]
-    # # Click Link      xpath=(//body/div/p[1]/a[2])
-    # Pause Execution
+Deactivate Orcid Account
+    Select Frame    xpath=(//iframe[@id='msg_body']|//frame[@id='msg_body'])
+    # Sleeping for 1 second to allow for mailinator to open the email.
+    Sleep   1 second
+    Click Link      xpath=(//a[contains(@href,'confirm-deactivate-orcid')])
